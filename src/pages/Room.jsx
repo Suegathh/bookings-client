@@ -15,7 +15,10 @@ const Room = () => {
   useEffect(() => {
     const getRoom = async () => {
       try {
-        const res = await fetch(`/api/rooms/${id}`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/rooms//${id}`);
+        
+        
+
 
         if (res.ok) {
           const data = await res.json();

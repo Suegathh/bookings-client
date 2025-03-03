@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+const API_URL = process.env.REACT_APP_API_URL; // Backend URL from environment variables
+
 const initialState = {
   rooms: [],
   isLoading: false,
@@ -8,12 +10,12 @@ const initialState = {
   message: "",
 };
 
-// create room
+// Create Room
 export const createRoom = createAsyncThunk(
   "room/create",
   async (roomData, thunkApi) => {
     try {
-      const res = await fetch("/api/rooms", {
+      const res = await fetch(`${API_URL}/api/rooms`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -26,8 +28,7 @@ export const createRoom = createAsyncThunk(
         return thunkApi.rejectWithValue(error);
       }
 
-      const data = await res.json();
-      return data;
+      return await res.json();
     } catch (error) {
       console.log(error.message);
       return thunkApi.rejectWithValue(error.message);
@@ -35,42 +36,42 @@ export const createRoom = createAsyncThunk(
   }
 );
 
-// get all rooms
+// Get All Rooms
 export const getRooms = createAsyncThunk("room/getall", async (_, thunkApi) => {
   try {
-    const res = await fetch("/api/rooms");
+    const res = await fetch(`${API_URL}/api/rooms`);
     if (!res.ok) {
       const error = await res.json();
       return thunkApi.rejectWithValue(error);
     }
 
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (error) {
     console.log(error.message);
     return thunkApi.rejectWithValue(error.message);
   }
 });
 
-// update room
+// Update Room
 export const updateRoom = createAsyncThunk(
   "/room/update",
   async (roomData, thunkApi) => {
     try {
       const { roomId, ...rest } = roomData;
-      const res = await fetch(`/api/rooms/${roomId}`, {
+      const res = await fetch(`${API_URL}/api/rooms/${roomId}`, {
         headers: {
           "Content-type": "application/json",
         },
         method: "PUT",
         body: JSON.stringify(rest),
       });
-      const data = await res.json();
+
       if (!res.ok) {
-        return thunkApi.rejectWithValue(data);
+        const error = await res.json();
+        return thunkApi.rejectWithValue(error);
       }
 
-      return data;
+      return await res.json();
     } catch (error) {
       console.log(error.message);
       return thunkApi.rejectWithValue(error.message);
@@ -78,18 +79,21 @@ export const updateRoom = createAsyncThunk(
   }
 );
 
+// Delete Room
 export const deleteRoom = createAsyncThunk(
   "room/delete",
   async (roomId, thunkApi) => {
     try {
-      const res = await fetch(`/api/rooms/${roomId}`, {
+      const res = await fetch(`${API_URL}/api/rooms/${roomId}`, {
         method: "DELETE",
       });
-      const data = await res.json();
+
       if (!res.ok) {
-        return thunkApi.rejectWithValue(data);
+        const error = await res.json();
+        return thunkApi.rejectWithValue(error);
       }
-      return data;
+
+      return await res.json();
     } catch (error) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -108,7 +112,6 @@ export const roomSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // add cases here
     builder
       .addCase(createRoom.pending, (state) => {
         state.isLoading = true;
@@ -156,7 +159,7 @@ export const roomSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.rooms = state.rooms.filter(
-          (room) => room._id != action.payload.id
+          (room) => room._id !== action.payload.id
         );
       })
       .addCase(deleteRoom.rejected, (state, action) => {
