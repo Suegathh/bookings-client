@@ -17,7 +17,7 @@ const Carousel = ({ data }) => {
         clearInterval(interval);
       };
     }, 3000);
-  }, []);
+  }, [data.length]);
 
   return (
     <div className="carousel-wrapper">
