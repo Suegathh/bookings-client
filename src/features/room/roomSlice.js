@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Use relative URL to leverage proxy configuration
-const API_URL = "/api/rooms"; 
+const API_URL = process.env.REACT_APP_API_URL; 
 
 const initialState = {
   rooms: [],
