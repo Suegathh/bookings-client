@@ -15,14 +15,14 @@ const initialState = {
 
 // ✅ Centralized fetch wrapper for consistent error handling
 const fetchWrapper = async (url, options = {}) => {
-  const token = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).token
+  const token = localStorage.getItem("user") 
+    ? JSON.parse(localStorage.getItem("user")).token 
     : "";
 
   const defaultOptions = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "", // ✅ Include auth token
+      Authorization: token ? `Bearer ${token}` : "",  // ✅ Add Token Here
     },
     credentials: "include",
   };
@@ -33,7 +33,7 @@ const fetchWrapper = async (url, options = {}) => {
     const response = await fetch(url, mergedOptions);
 
     if (!response.ok) {
-      const errorData = await response.text(); // Read error response as text
+      const errorData = await response.text();
       throw new Error(errorData || `HTTP error! status: ${response.status}`);
     }
 
@@ -43,6 +43,8 @@ const fetchWrapper = async (url, options = {}) => {
     throw error;
   }
 };
+
+
 
 // ✅ **Create a Room**
 export const createRoom = createAsyncThunk(
