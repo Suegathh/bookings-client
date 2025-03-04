@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { createBooking, reset } from "../features/booking/bookingSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = "https://your-backend-url.com"; // ✅ Ensure API URL
 
 const Booking = () => {
   const { id: roomId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isSuccess } = useSelector((state) => state.booking);
+  const { isSuccess, isLoading, isError, message } = useSelector((state) => state.booking);
 
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,7 @@ const Booking = () => {
 
   const { name, email, checkInDate, checkOutDate } = formData;
 
+  // ✅ Fetch Room Details
   useEffect(() => {
     const getRoom = async () => {
       try {
@@ -30,9 +31,7 @@ const Booking = () => {
         setError(null);
         const res = await fetch(`${API_URL}/api/rooms/${roomId}`, { credentials: "include" });
 
-        if (!res.ok) {
-          throw new Error("Room not found");
-        }
+        if (!res.ok) throw new Error(`Room not found (Status: ${res.status})`);
 
         const data = await res.json();
         setRoom(data);
@@ -43,16 +42,19 @@ const Booking = () => {
         setLoading(false);
       }
     };
+
     getRoom();
   }, [roomId]);
 
+  // ✅ Redirect on Successful Booking
   useEffect(() => {
     if (isSuccess) {
-      navigate("/success");
       dispatch(reset());
+      navigate("/success");
     }
   }, [isSuccess, dispatch, navigate]);
 
+  // ✅ Handle Input Changes
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -60,10 +62,24 @@ const Booking = () => {
     }));
   };
 
+  // ✅ Validate and Submit Booking
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate dates
+    // ✅ Ensure required fields are filled
+    if (!name.trim() || !email.trim() || !checkInDate || !checkOutDate) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // ✅ Ensure check-in is today or later
+    const today = new Date().toISOString().split("T")[0];
+    if (checkInDate < today) {
+      alert("Check-in date cannot be in the past.");
+      return;
+    }
+
+    // ✅ Ensure check-out is after check-in
     if (new Date(checkInDate) >= new Date(checkOutDate)) {
       alert("Check-out date must be after check-in date.");
       return;
@@ -109,7 +125,9 @@ const Booking = () => {
             <input type="date" name="checkOutDate" value={checkOutDate} onChange={handleChange} required />
           </div>
 
-          <button type="submit">Book Now</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Booking..." : "Book Now"}
+          </button>
         </form>
       </div>
     </div>
