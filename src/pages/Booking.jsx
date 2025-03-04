@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import { createBooking, reset } from "../features/booking/bookingSlice";
 import { useDispatch, useSelector } from "react-redux";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Booking = () => {
   const { id: roomId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { isSuccess } = useSelector((state) => state.booking);
 
   const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,25 +26,32 @@ const Booking = () => {
   useEffect(() => {
     const getRoom = async () => {
       try {
-        const res = await fetch(`/api/rooms/${roomId}`);
-        const data = await res.json();
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`${API_URL}/api/rooms/${roomId}`, { credentials: "include" });
+
         if (!res.ok) {
-          return console.log("there was a problem getting room");
+          throw new Error("Room not found");
         }
-        return setRoom(data);
+
+        const data = await res.json();
+        setRoom(data);
       } catch (error) {
-        console.log(error.message);
+        console.error("Error fetching room:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     getRoom();
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     if (isSuccess) {
       navigate("/success");
       dispatch(reset());
     }
-  }, [isSuccess]);
+  }, [isSuccess, dispatch, navigate]);
 
   const handleChange = (e) => {
     setFormData((prevState) => ({
@@ -52,6 +62,12 @@ const Booking = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate dates
+    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+      alert("Check-out date must be after check-in date.");
+      return;
+    }
 
     const dataToSubmit = {
       roomId,
@@ -64,53 +80,36 @@ const Booking = () => {
     dispatch(createBooking(dataToSubmit));
   };
 
+  if (loading) return <div className="loading">Loading room details...</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!room) return <div className="error">Room not found</div>;
+
   return (
     <div>
-      <h1 className="heading center">Book Now</h1>
+      <h1 className="heading center">Book {room.name}</h1>
       <div className="form-wrapper">
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={name}
-              placeholder="Enter full name"
-              onChange={handleChange}
-            />
+            <input type="text" name="name" value={name} placeholder="Enter full name" onChange={handleChange} required />
           </div>
 
           <div className="input-group">
-            <label htmlFor="name">Email</label>
-            <input
-              type="text"
-              name="email"
-              value={email}
-              placeholder="Enter your email address"
-              onChange={handleChange}
-            />
+            <label htmlFor="email">Email</label>
+            <input type="email" name="email" value={email} placeholder="Enter your email" onChange={handleChange} required />
           </div>
 
           <div className="input-group">
-            <label htmlFor="name">Check In Date</label>
-            <input
-              type="date"
-              name="checkInDate"
-              value={checkInDate}
-              onChange={handleChange}
-            />
+            <label htmlFor="checkInDate">Check-In Date</label>
+            <input type="date" name="checkInDate" value={checkInDate} onChange={handleChange} required />
           </div>
 
           <div className="input-group">
-            <label htmlFor="name">Check Out Date</label>
-            <input
-              type="date"
-              name="checkOutDate"
-              value={checkOutDate}
-              onChange={handleChange}
-            />
+            <label htmlFor="checkOutDate">Check-Out Date</label>
+            <input type="date" name="checkOutDate" value={checkOutDate} onChange={handleChange} required />
           </div>
-          <button type="submit">Submit</button>
+
+          <button type="submit">Book Now</button>
         </form>
       </div>
     </div>
