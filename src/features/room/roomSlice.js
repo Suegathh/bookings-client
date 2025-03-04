@@ -1,23 +1,30 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Use relative URL to leverage proxy configuration
-const API_URL = process.env.REACT_APP_API_URL; 
+// Use environment variable for API base URL
+const API_URL = process.env.REACT_APP_API_URL + "/api/rooms";
 
+// Initial state
 const initialState = {
   rooms: [],
+  selectedRoom: null, // ✅ Store single-room details separately
   isLoading: false,
   isSuccess: false,
   isError: false,
   message: "",
 };
 
-// Centralized fetch wrapper for consistent error handling
+// ✅ Centralized fetch wrapper for consistent error handling
 const fetchWrapper = async (url, options = {}) => {
+  const token = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")).token
+    : "";
+
   const defaultOptions = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "", // ✅ Include auth token
     },
-    credentials: 'include', // Important for CORS with credentials
+    credentials: "include",
   };
 
   const mergedOptions = { ...defaultOptions, ...options };
@@ -26,13 +33,13 @@ const fetchWrapper = async (url, options = {}) => {
     const response = await fetch(url, mergedOptions);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      const errorData = await response.text(); // Read error response as text
+      throw new Error(errorData || `HTTP error! status: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Fetch Error:', error);
+    console.error("Fetch Error:", error);
     throw error;
   }
 };
@@ -54,7 +61,7 @@ export const createRoom = createAsyncThunk(
 
 // ✅ **Get All Rooms**
 export const getRooms = createAsyncThunk(
-  "room/getAll", 
+  "room/getAll",
   async (_, thunkApi) => {
     try {
       return await fetchWrapper(API_URL);
@@ -66,7 +73,7 @@ export const getRooms = createAsyncThunk(
 
 // ✅ **Get a Single Room**
 export const getRoom = createAsyncThunk(
-  "room/getOne", 
+  "room/getOne",
   async (roomId, thunkApi) => {
     try {
       return await fetchWrapper(`${API_URL}/${roomId}`);
@@ -93,11 +100,11 @@ export const updateRoom = createAsyncThunk(
 
 // ✅ **Delete a Room**
 export const deleteRoom = createAsyncThunk(
-  "room/delete", 
+  "room/delete",
   async (roomId, thunkApi) => {
     try {
       await fetchWrapper(`${API_URL}/${roomId}`, { method: "DELETE" });
-      return { id: roomId }; // Return the deleted room ID
+      return { id: roomId }; // ✅ Return deleted room ID
     } catch (error) {
       return thunkApi.rejectWithValue(error.message);
     }
@@ -130,7 +137,7 @@ export const roomSlice = createSlice({
     };
 
     builder
-      // Create Room
+      // ✅ Create Room
       .addCase(createRoom.pending, handlePendingState)
       .addCase(createRoom.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -139,7 +146,7 @@ export const roomSlice = createSlice({
       })
       .addCase(createRoom.rejected, handleRejectedState)
 
-      // Get All Rooms
+      // ✅ Get All Rooms
       .addCase(getRooms.pending, handlePendingState)
       .addCase(getRooms.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -148,16 +155,16 @@ export const roomSlice = createSlice({
       })
       .addCase(getRooms.rejected, handleRejectedState)
 
-      // Get Single Room
+      // ✅ Get Single Room
       .addCase(getRoom.pending, handlePendingState)
       .addCase(getRoom.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.rooms = [action.payload];
+        state.selectedRoom = action.payload; // ✅ Store single-room data correctly
       })
       .addCase(getRoom.rejected, handleRejectedState)
 
-      // Update Room
+      // ✅ Update Room
       .addCase(updateRoom.pending, handlePendingState)
       .addCase(updateRoom.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -168,7 +175,7 @@ export const roomSlice = createSlice({
       })
       .addCase(updateRoom.rejected, handleRejectedState)
 
-      // Delete Room
+      // ✅ Delete Room
       .addCase(deleteRoom.pending, handlePendingState)
       .addCase(deleteRoom.fulfilled, (state, action) => {
         state.isLoading = false;
