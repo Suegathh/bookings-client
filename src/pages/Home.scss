@@ -1,0 +1,86 @@
+.home-container {
+    min-height: calc(100vh - 80px); // Adjust based on your navbar height
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(220,240,255,0.9)),
+                url('C:\Users\USER\OneDrive\Documents\react_projects\Booking_app\client\public\logo192.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .home-content {
+    background-color: rgba(255,255,255,0.85);
+    border-radius: 15px;
+    padding: 3rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 700px;
+    width: 100%;
+    
+    .heading {
+      font-size: 3rem;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+  
+    .subheading {
+      font-size: 1.2rem;
+      color: #34495e;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+  
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+  
+      .btn {
+        padding: 0.8rem 1.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+  
+        &-primary {
+          background-color: #3498db;
+          color: white;
+          &:hover {
+            background-color: #2980b9;
+          }
+        }
+  
+        &-secondary {
+          background-color: #ecf0f1;
+          color: #2c3e50;
+          &:hover {
+            background-color: #dfe4e6;
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .home-container {
+      padding: 1rem;
+    }
+  
+    .home-content {
+      padding: 2rem;
+  
+      .heading {
+        font-size: 2.5rem;
+      }
+  
+      .cta-buttons {
+        flex-direction: column;
+      }
+    }
+  }
