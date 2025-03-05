@@ -11,7 +11,7 @@ const initialState = {
   message: "",
 };
 
-const API_URL = "https://booking-backend-bice.vercel.app/api/users";
+const API_URL = "https://bookings-backend-g8dm.onrender.com"
 
 // Register user
 export const register = createAsyncThunk("auth/register", async (userData, thunkAPI) => {

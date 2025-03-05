@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 
-const API_URL = "https://booking-backend-bice.vercel.app";
+const API_URL = "https://bookings-backend-g8dm.onrender.com"
 
 const Success = () => {
   const user = useSelector((state) => state.auth?.user); // Safe access

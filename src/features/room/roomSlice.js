@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Use environment variable for API base URL
-const API_URL = process.env.REACT_APP_API_URL + "/api/rooms";
+// ✅ Use environment variable for API base URL
+const API_URL = "https://bookings-backend-g8dm.onrender.com"
 
 // Initial state
 const initialState = {
@@ -15,16 +15,16 @@ const initialState = {
 
 // ✅ Centralized fetch wrapper for consistent error handling
 const fetchWrapper = async (url, options = {}) => {
-  const token = localStorage.getItem("user") 
-    ? JSON.parse(localStorage.getItem("user")).token 
+  const token = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")).token
     : "";
 
   const defaultOptions = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",  // ✅ Add Token Here
+      Authorization: token ? `Bearer ${token}` : "",
     },
-    credentials: "include",
+    credentials: "include", // ✅ Ensure this matches backend CORS
   };
 
   const mergedOptions = { ...defaultOptions, ...options };
@@ -34,7 +34,7 @@ const fetchWrapper = async (url, options = {}) => {
 
     if (!response.ok) {
       const errorData = await response.text();
-      throw new Error(errorData || `HTTP error! status: ${response.status}`);
+      throw new Error(errorData || `HTTP error! Status: ${response.status}`);
     }
 
     return await response.json();
@@ -43,8 +43,6 @@ const fetchWrapper = async (url, options = {}) => {
     throw error;
   }
 };
-
-
 
 // ✅ **Create a Room**
 export const createRoom = createAsyncThunk(
@@ -62,16 +60,16 @@ export const createRoom = createAsyncThunk(
 );
 
 // ✅ **Get All Rooms**
-export const getRooms = createAsyncThunk(
-  "room/getAll",
-  async (_, thunkApi) => {
-    try {
-      return await fetchWrapper(API_URL);
-    } catch (error) {
-      return thunkApi.rejectWithValue(error.message);
-    }
+export const getRooms = createAsyncThunk("room/getAll", async (_, thunkApi) => {
+  try {
+    const response = await fetchWrapper(API_URL);
+    console.log("Rooms fetched in Redux:", response); // ✅ Log API response in Redux
+    return response;
+  } catch (error) {
+    console.error("Error fetching rooms:", error.message);
+    return thunkApi.rejectWithValue(error.message);
   }
-);
+});
 
 // ✅ **Get a Single Room**
 export const getRoom = createAsyncThunk(

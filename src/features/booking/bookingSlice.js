@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_URL = "https://booking-backend-bice.vercel.app"; // ✅ Backend URL
+const API_URL = "https://bookings-backend-g8dm.onrender.com"
 
 const initialState = {
   booking: null,

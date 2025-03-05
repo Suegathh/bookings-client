@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { createBooking, reset } from "../features/booking/bookingSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-const API_URL = "https://booking-backend-bice.vercel.app"; // ✅ Ensure API URL
+const API_URL = "https://bookings-backend-g8dm.onrender.com"
 
 const Booking = () => {
   const { id: roomId } = useParams();
