@@ -27,7 +27,7 @@
       "react-app/jest"
     ]
   },
-  "proxy": "https://booking-backend-bice.vercel.app", 
+  "proxy": "https://bookings-backend-g8dm.onrender.com", 
   "browserslist": {
     "production": [
       ">0.2%",
