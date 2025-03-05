@@ -1,22 +1,25 @@
 .main-header {
     background-color: #f8f9fa;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     
     .container {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      max-width: 500px; /* Reduced width size */
+      margin: 0 auto; /* Center align */
     }
   
     img {
-      max-width: 150px;
+      max-width: 100px; /* Reduced size */
       animation: fadeIn 1.5s ease-in-out;
     }
   
     nav {
       a {
-        margin: 0 0.5rem;
+        margin: 0 0.25rem; /* Reduced margin */
+        font-size: 0.875rem; /* Smaller font size */
         color: #333;
         text-decoration: none;
         transition: color 0.3s;
@@ -27,15 +30,17 @@
       }
   
       span {
-        margin-right: 1rem;
+        margin-right: 0.5rem; /* Reduced margin */
         font-weight: bold;
+        font-size: 0.875rem; /* Smaller font size */
       }
   
       button {
         background-color: #007bff;
         border: none;
         color: white;
-        padding: 0.5rem 1rem;
+        padding: 0.25rem 0.5rem; /* Reduced padding */
+        font-size: 0.875rem; /* Smaller font size */
         cursor: pointer;
         transition: background-color 0.3s;
   
@@ -62,14 +67,16 @@
     .main-header .container {
       flex-direction: column;
       text-align: center;
+      max-width: 100%; /* Full width for small screens */
     }
     
     nav {
-      margin-top: 1rem;
+      margin-top: 0.5rem; /* Reduced margin */
   
       a, span, button {
         display: block;
-        margin: 0.5rem 0;
+        margin: 0.25rem 0; /* Reduced margin */
+        font-size: 0.875rem; /* Smaller font size */
       }
     }
   }
