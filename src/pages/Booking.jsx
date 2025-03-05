@@ -63,38 +63,57 @@ const Booking = () => {
   };
 
   // ✅ Validate and Submit Booking
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    // ✅ Retrieve the logged-in user from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    // ✅ Redirect to login if the user is not logged in
+    if (!user || !user._id) {
+      navigate("/login"); // Redirect to login page
+      return;
+    }
+  
+    const userId = user._id;
+  
     // ✅ Ensure required fields are filled
     if (!name.trim() || !email.trim() || !checkInDate || !checkOutDate) {
       alert("Please fill in all fields.");
       return;
     }
-
+  
     // ✅ Ensure check-in is today or later
     const today = new Date().toISOString().split("T")[0];
     if (checkInDate < today) {
       alert("Check-in date cannot be in the past.");
       return;
     }
-
+  
     // ✅ Ensure check-out is after check-in
     if (new Date(checkInDate) >= new Date(checkOutDate)) {
       alert("Check-out date must be after check-in date.");
       return;
     }
-
+  
+    // ✅ Prepare the booking data
     const dataToSubmit = {
       roomId,
+      userId, // Now the userId is included properly
       name,
       email,
       checkInDate,
       checkOutDate,
     };
-
+  
+    console.log("📤 Dispatching booking:", dataToSubmit);
+  
+    // ✅ Dispatch the booking action
     dispatch(createBooking(dataToSubmit));
   };
+  
+  
 
   if (loading) return <div className="loading">Loading room details...</div>;
   if (error) return <div className="error">{error}</div>;
