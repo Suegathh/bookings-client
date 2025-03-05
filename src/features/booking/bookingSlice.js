@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+const API_URL = "https://booking-backend-bice.vercel.app"; // ✅ Backend URL
+
 const initialState = {
   booking: null,
   isLoading: false,
@@ -12,16 +14,28 @@ export const createBooking = createAsyncThunk(
   "booking/create",
   async (bookingData, thunkApi) => {
     try {
-      const res = await fetch(`/api/bookings`, {
+      // ✅ Retrieve user ID from localStorage (or Redux store)
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user ? user._id : null;
+
+      // ✅ Include `userId` in booking data
+      const newBookingData = { ...bookingData, userId };
+
+      console.log("📦 Sending Booking Data:", newBookingData); // Debugging
+
+      const res = await fetch(`${API_URL}/api/bookings`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        method: "POST",
-        body: JSON.stringify(bookingData),
+        body: JSON.stringify(newBookingData),
       });
+
       const data = await res.json();
+      console.log("📤 Server Response:", data); // Debugging
+
       if (!res.ok) {
-        return thunkApi.rejectWithValue(data);
+        return thunkApi.rejectWithValue(data.message || "Booking failed");
       }
 
       return data;
@@ -30,6 +44,7 @@ export const createBooking = createAsyncThunk(
     }
   }
 );
+
 
 export const bookingSlice = createSlice({
   name: "booking",
@@ -61,5 +76,4 @@ export const bookingSlice = createSlice({
 });
 
 export const { reset } = bookingSlice.actions;
-
 export default bookingSlice.reducer;

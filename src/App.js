@@ -6,6 +6,8 @@ import Rooms from "./pages/Rooms"
 import Header from "./components/Header"
 import Booking from "./pages/Booking"
 import Success from "./pages/Success"
+import Register from "./pages/Register"
+import Login from "./pages/Login"
 
 
 const App = () => {
@@ -19,6 +21,8 @@ const App = () => {
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/bookings/:id" element={<Booking />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Router>
     </div>

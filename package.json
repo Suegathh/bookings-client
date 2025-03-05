@@ -27,7 +27,7 @@
       "react-app/jest"
     ]
   },
-  "proxy": "http://localhost:5000", 
+  "proxy": "https://booking-backend-bice.vercel.app", 
   "browserslist": {
     "production": [
       ">0.2%",
