@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // ✅ Use environment variable for API base URL
-const API_URL = "https://bookings-backend-g8dm.onrender.com"
+const API_URL = "https://bookings-backend-g8dm.onrender.com/api/rooms";
 
 // Initial state
 const initialState = {
@@ -59,19 +59,15 @@ export const createRoom = createAsyncThunk(
   }
 );
 
-// ✅ **Get All Rooms**
 export const getRooms = createAsyncThunk("room/getAll", async (_, thunkApi) => {
   try {
-    const response = await fetchWrapper(API_URL);
-    console.log("Rooms fetched in Redux:", response); // ✅ Log API response in Redux
+    const response = await fetchWrapper(`${API_URL}`);
     return response;
   } catch (error) {
-    console.error("Error fetching rooms:", error.message);
     return thunkApi.rejectWithValue(error.message);
   }
 });
 
-// ✅ **Get a Single Room**
 export const getRoom = createAsyncThunk(
   "room/getOne",
   async (roomId, thunkApi) => {
@@ -83,7 +79,6 @@ export const getRoom = createAsyncThunk(
   }
 );
 
-// ✅ **Update a Room**
 export const updateRoom = createAsyncThunk(
   "room/update",
   async ({ roomId, ...roomData }, thunkApi) => {
@@ -98,13 +93,12 @@ export const updateRoom = createAsyncThunk(
   }
 );
 
-// ✅ **Delete a Room**
 export const deleteRoom = createAsyncThunk(
   "room/delete",
   async (roomId, thunkApi) => {
     try {
       await fetchWrapper(`${API_URL}/${roomId}`, { method: "DELETE" });
-      return { id: roomId }; // ✅ Return deleted room ID
+      return { id: roomId };
     } catch (error) {
       return thunkApi.rejectWithValue(error.message);
     }
