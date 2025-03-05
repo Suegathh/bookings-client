@@ -1,10 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './Home.scss';
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Home.scss";
 
 const Home = () => {
   return (
-    <div className="home-container">
+    <div
+      className="home-container"
+    >
       <div className="home-content">
         <h1 className="heading">Welcome to Our Hotel</h1>
         <p className="subheading">
