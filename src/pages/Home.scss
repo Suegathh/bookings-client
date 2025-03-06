@@ -1,63 +1,114 @@
-.home-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Full viewport height */
-  text-align: center;
-  animation: fadeIn 1.5s ease-in-out;
-  background: #f8f9fa; /* Light background color */
-  color: #333;
+#home {
+  .home-container {
+    position: relative;
+    width: 100%;
+    height: 70vh; /* Reduced height */
+    overflow: hidden;
+  }
 
-  .home-content {
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-    padding: 2rem;
-    border-radius: 10px;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
 
-    .heading {
-      font-size: 3rem;
-      color: #333;
-      animation: slideDown 1s ease-in-out;
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(60%);
+    transition: transform 2s ease-in-out;
+  }
+
+  .hero:hover .hero-image {
+    transform: scale(1.05); /* Smaller scale effect */
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-content {
+    position: absolute;
+    top: 20%; /* Pushed the text higher */
+    color: #fff;
+    z-index: 2;
+    max-width: 80%;
+    animation: fadeIn 2s ease-in-out;
+  }
+
+  h1.animate-text {
+    font-size: 3rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: slideUp 1.5s ease-in-out forwards;
+  }
+
+  p.animate-subtext {
+    font-size: 1.3rem;
+    margin-top: 10px;
+    opacity: 0;
+    animation: slideUp 1.5s ease-in-out forwards 0.5s;
+  }
+
+  .cta-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff8c00, #ff3d00);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    animation: fadeIn 2s ease-in-out 1s forwards;
+    opacity: 0;
+  }
+
+  .cta-button:hover {
+    transform: scale(1.1);
+    background: linear-gradient(90deg, #ff3d00, #ff8c00);
+    box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    h1.animate-text {
+      font-size: 2rem;
     }
 
-    .subheading {
-      font-size: 1.5rem;
-      color: #555;
-      margin-top: 1rem;
+    p.animate-subtext {
+      font-size: 1rem;
     }
 
-    .cta-buttons {
-      margin-top: 2rem;
+    .cta-button {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+  }
 
-      .btn {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        margin: 0.5rem;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background-color 0.3s, transform 0.3s;
-
-        &.btn-primary {
-          background-color: #007bff;
-          color: white;
-
-          &:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-          }
-        }
-
-        &.btn-secondary {
-          background-color: #6c757d;
-          color: white;
-
-          &:hover {
-            background-color: #343a40;
-            transform: scale(1.05);
-          }
-        }
-      }
+  /* Animations */
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
@@ -69,39 +120,39 @@
       opacity: 1;
     }
   }
-
-  @keyframes slideDown {
-    from {
-      transform: translateY(-10px);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .home-container {
-    padding: 1rem;
-  }
+h1.animate-text {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 4px 4px 10px rgba(255, 165, 0, 0.8);
+  background: linear-gradient(90deg, #ff8c00, #ff3d00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  animation: slideIn 1.8s ease-in-out forwards;
+}
 
-  .home-content {
-    padding: 1rem;
-  }
+p.animate-subtext {
+  font-size: 1.5rem;
+  margin-top: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: fadeIn 2s ease-in-out forwards 0.5s;
+}
 
-  .heading {
-    font-size: 2.5rem;
+/* Title Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
   }
-
-  .subheading {
-    font-size: 1.25rem;
-  }
-
-  .cta-buttons {
-    .btn {
-      padding: 0.5rem 1rem;
-      margin: 0.25rem;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

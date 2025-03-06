@@ -16,8 +16,12 @@ const Success = () => {
   const newBooking = location.state?.newBooking;
 
   useEffect(() => {
+    // Debugging user state
+    console.log("Current user state:", user);
+    
     // If we have a new booking from the navigation state, add it to our bookings list immediately
     if (newBooking) {
+      console.log("New booking from navigation:", newBooking);
       setBookings(prevBookings => {
         // Check if this booking is already in our list to avoid duplicates
         const exists = prevBookings.some(booking => booking._id === newBooking._id);
@@ -33,152 +37,88 @@ const Success = () => {
         return;
       }
     
-      let retries = 0;
-      const maxRetries = 3;
+      // Try to directly check if we have a newly created booking
+      if (newBooking) {
+        console.log("Using new booking without API fetch");
+        setBookings([newBooking]);
+        setLoading(false);
+        return; // Skip API call if we already have the new booking
+      }
       
-      const fetchWithRetry = async () => {
-        try {
-          console.log(`Fetching bookings for user ID: ${user._id} (Attempt ${retries + 1})`);
+      console.log(`Attempting to fetch bookings for user ID: ${user._id}`);
       
-          const response = await fetch(`${API_URL}/api/bookings/user/${user._id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(user.token && { 'Authorization': `Bearer ${user.token}` })
-            },
-            credentials: 'include'
-          });
-      
-          console.log('Fetch Response Status:', response.status);
-          
-          // Handle 404 "No bookings found" case gracefully
-          if (response.status === 404) {
-            console.log('API returned 404: No bookings found for this user');
-            
-            // If we have a new booking, keep it displayed
-            if (newBooking) {
-              console.log('Using new booking from navigation state instead');
-              setLoading(false);
-              return;
-            }
-            
-            // If we have no new booking and this isn't our last retry, try again
-            if (retries < maxRetries) {
-              retries++;
-              console.log(`Will retry in 2 seconds (Attempt ${retries + 1}/${maxRetries + 1})`);
-              setTimeout(fetchWithRetry, 2000); // Wait 2 seconds before retrying
-              return;
-            }
-            
-            // All retries exhausted, show empty bookings
-            setBookings([]);
-            setLoading(false);
-            return;
+      try {
+        // Direct fetch without retries for simplicity
+        const response = await fetch(`${API_URL}/api/bookings/user/${user._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token || ''}`
           }
-      
-          const data = await response.json();
-          
-          // Comprehensive logging of raw data
-          console.log('Raw Fetch Data:', data);
-  
-          // Normalize data to ensure it's an array
-          const bookingsArray = Array.isArray(data) 
-            ? data 
-            : data.bookings 
-            ? data.bookings 
-            : data.data 
-            ? data.data 
-            : [];
-          
-          console.log('Normalized Bookings:', {
-            count: bookingsArray.length,
-            bookings: bookingsArray.map(booking => ({
-              id: booking._id,
-              roomName: booking.roomId?.name || booking.roomName,
-              checkIn: booking.checkInDate,
-              checkOut: booking.checkOutDate
-            }))
-          });
-      
-          // If we have a new booking, make sure it's included and at the top of the list
-          if (newBooking) {
-            const existsInFetchedData = bookingsArray.some(b => b._id === newBooking._id);
-            
-            if (!existsInFetchedData) {
-              bookingsArray.unshift(newBooking);
-            }
-          }
-          
-          setBookings(bookingsArray);
+        });
+        
+        console.log('Fetch Response Status:', response.status);
+        
+        // If 404, we'll just show "No bookings found" instead of treating it as an error
+        if (response.status === 404) {
+          console.log('No bookings found for this user');
+          setBookings([]);
           setLoading(false);
-        } catch (err) {
-          console.error("Booking fetch error:", err);
-          
-          // If we have a new booking, show it despite the fetch error
-          if (newBooking) {
-            console.log('Using new booking from navigation state despite fetch error');
-            setBookings([newBooking]);
-            setLoading(false);
-            return;
-          }
-          
-          // Otherwise, retry on error too
-          if (retries < maxRetries) {
-            retries++;
-            console.log(`Error occurred, will retry in 2 seconds (Attempt ${retries + 1}/${maxRetries + 1})`);
-            setTimeout(fetchWithRetry, 2000);
-            return;
-          }
-          
-          setError(err.message || "Failed to fetch bookings");
-          setLoading(false);
+          return;
         }
-      };
-
-      fetchWithRetry();
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Bookings data from API:', data);
+        
+        // Normalize data to ensure it's an array
+        const bookingsArray = Array.isArray(data) 
+          ? data 
+          : data.bookings 
+          ? data.bookings 
+          : data.data 
+          ? data.data 
+          : [];
+        
+        setBookings(bookingsArray);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+        // Show error but continue with empty bookings
+        setError(`Unable to fetch bookings: ${err.message}`);
+        setBookings([]);
+        setLoading(false);
+      }
     };
 
     fetchBookings();
   }, [user, newBooking]);
 
-  // Display a custom message if we have a new booking but are still loading other bookings
-  const isLoadingWithNewBooking = loading && newBooking;
-
-  if (loading && !newBooking) return (
+  // Simplified loading state
+  if (loading) return (
     <div className="loading-container">
       <div className="spinner"></div>
       <p>Loading your bookings...</p>
     </div>
   );
 
-  if (error && !newBooking) return (
-    <div className="error-container">
-      <h2>Booking Retrieval Error</h2>
-      <p>{error}</p>
-      <div className="error-actions">
-        <button onClick={() => navigate('/rooms')}>Browse Rooms</button>
-        <button onClick={() => navigate('/login')}>Log In</button>
-      </div>
-    </div>
-  );
-
-  const hasBookings = bookings.length > 0 || newBooking;
-
   return (
     <div className="success-container">
       <h1 className="heading center">Booking Confirmed!</h1>
-
-      {isLoadingWithNewBooking && (
-        <div className="loading-notice">
-          <p>Displaying your new booking. Loading additional bookings...</p>
-          <div className="small-spinner"></div>
+      
+      {error && (
+        <div className="error-notice">
+          <p>{error}</p>
         </div>
       )}
 
-      {!hasBookings ? (
+      {bookings.length === 0 ? (
         <div className="no-bookings">
           <h2>No Bookings Found</h2>
-          <p>It seems you haven't made any bookings yet.</p>
+          <p>It seems you haven't made any bookings yet or the booking system is still updating.</p>
           <div className="no-bookings-actions">
             <button onClick={() => navigate('/rooms')}>
               Browse Available Rooms
@@ -188,7 +128,7 @@ const Success = () => {
       ) : (
         <div className="bookings-grid">
           {bookings.map((booking) => (
-            <div key={booking._id} className="booking-card">
+            <div key={booking._id || Math.random()} className="booking-card">
               <div className="booking-header">
                 <h2>{booking.roomName || booking.roomId?.name || 'Room Booking'}</h2>
                 <span className="booking-status">

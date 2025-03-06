@@ -1,25 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Home.scss";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
-    <div
-      className="home-container"
-    >
-      <div className="home-content">
-        <h1 className="heading">Welcome to Our Hotel</h1>
-        <p className="subheading">
-          Discover comfort, luxury, and unforgettable experiences. 
-          Your perfect stay awaits you in our meticulously designed rooms.
-        </p>
-        <div className="cta-buttons">
-          <Link to="/rooms" className="btn btn-primary">
+    <div id="home" className="home-container">
+      {/* Hero Section */}
+      <div className="hero">
+        <div className="overlay"></div>
+        <img src="./images/hotel1.jpeg" alt="Hotel" className="hero-image" />
+        
+        {/* Animated Text */}
+        <div className="hero-content">
+          <h1 className="animate-text">Welcome to Your Dream Stay</h1>
+          <p className="animate-subtext">
+            Experience luxury and comfort like never before.
+          </p>
+
+          {/* CTA Button */}
+          <button className="cta-button" onClick={() => navigate("/rooms")}>
             Explore Rooms
-          </Link>
-          <Link to="/rooms" className="btn btn-secondary">
-            Make a Booking
-          </Link>
+          </button>
         </div>
       </div>
     </div>
